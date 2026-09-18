@@ -160,9 +160,7 @@ app.post("/api/push/subscribe",(req,res)=>{
 
 app.get("/api/push/status",(req,res)=>{
   res.json({configured:vapidReady, subscribers:db.prepare("SELECT COUNT(*) n FROM push_subscriptions").get().n});
-});
-
-app.get("*",(req,res)=>{
+app.get('/*splat', (req, res) => {
   res.sendFile(path.join(__dirname,"public","index.html"));
 });
 
