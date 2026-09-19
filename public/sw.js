@@ -1,30 +1,35 @@
 self.addEventListener("push", event => {
   let data = {};
+
   try {
     data = event.data ? event.data.json() : {};
   } catch {
-    data = { title: "Punitions ISL", body: "Nouvelle notification" };
+    data = {};
   }
 
-  const title = data.title || "Punitions ISL";
-  const options = {
-    body: data.body || "Nouvelle notification",
-    icon: "/icon.svg",
-    badge: "/icon.svg",
-    data: { url: data.url || "/" }
-  };
-
-  event.waitUntil(self.registration.showNotification(title, options));
+  event.waitUntil(
+    self.registration.showNotification(
+      data.title || "Punitions ISL",
+      {
+        body: data.body || "Nouvelle notification",
+        icon: "/icon.svg",
+        badge: "/icon.svg",
+        data: { url: data.url || "/" }
+      }
+    )
+  );
 });
 
 self.addEventListener("notificationclick", event => {
   event.notification.close();
+
   event.waitUntil(
-    clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => {
-      for (const client of list) {
-        if ("focus" in client) return client.focus();
-      }
-      return clients.openWindow("/");
-    })
+    clients.matchAll({ type: "window", includeUncontrolled: true })
+      .then(clientsList => {
+        if (clientsList.length > 0) {
+          return clientsList[0].focus();
+        }
+        return clients.openWindow("/");
+      })
   );
 });
